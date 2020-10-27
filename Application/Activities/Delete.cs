@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using MediatR;
 using Persistence;
 
@@ -10,7 +12,7 @@ namespace Application.Activities
     {
         public class Command : IRequest
         {
-            public Guid Id { get; set; }        
+            public Guid Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>
@@ -27,9 +29,9 @@ namespace Application.Activities
 
                 var activites = await _context.Activities.FindAsync(request.Id);
 
-                if(activites == null)
-                    throw new Exception("Could not find activits");
-                
+                if (activites == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { activity = "Not Found" });
+
 
                 _context.Remove(activites);
                 var success = await _context.SaveChangesAsync() > 0;

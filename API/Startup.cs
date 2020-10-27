@@ -1,4 +1,6 @@
+using API.MiddleWare;
 using Application.Activities;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,30 +19,37 @@ namespace API
             Configuration = configuration;
         }
         public IConfiguration Configuration { get; }
-       
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddDbContext<DataContext>(opt => 
+
+
+            services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
-           services.AddCors(opt => 
-            {
-                opt.AddPolicy("CorsPolicy", policy => 
-                {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
-                });
-            });
+
+            services.AddCors(opt =>
+             {
+                 opt.AddPolicy("CorsPolicy", policy =>
+                 {
+                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                 });
+             });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
+
+            services.AddControllers()
+            .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
         }
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
+
             }
 
             app.UseHttpsRedirection();
