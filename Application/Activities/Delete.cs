@@ -32,7 +32,6 @@ namespace Application.Activities
                 if (activites == null)
                     throw new RestException(HttpStatusCode.NotFound, new { activity = "Not Found" });
 
-
                 _context.Remove(activites);
                 var success = await _context.SaveChangesAsync() > 0;
 
