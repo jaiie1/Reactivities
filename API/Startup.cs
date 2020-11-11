@@ -1,6 +1,7 @@
 using API.MiddleWare;
 using Application.Activities;
 using Application.Interfaces;
+using AutoMapper;
 using Domain;
 using FluentValidation.AspNetCore;
 using Infrastructure.Security;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Persistence;
 using System.Text;
 
@@ -35,31 +37,45 @@ namespace API
 
             services.AddDbContext<DataContext>(opt =>
             {
+                opt.UseLazyLoadingProxies();
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             services.AddCors(opt =>
              {
+                 
                  opt.AddPolicy("CorsPolicy", policy =>
                  {
-                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
+                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
                  });
              });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
+            services.AddAutoMapper(typeof(List.Handler));
 
             services.AddControllers(opt => {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 
                 opt.Filters.Add(new AuthorizeFilter(policy));  
             })
-            .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
+            .AddFluentValidation(cfg =>
+          {
+            cfg.RegisterValidatorsFromAssemblyContaining<Create>();
+          });
 
             var builder = services.AddIdentityCore<AppUser>();
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
             identityBuilder.AddDefaultTokenProviders();
+
+            services.AddAuthorization(opt =>{
+                opt.AddPolicy("IsActivityHost", policy =>{
+                    policy.Requirements.Add(new IsHostRequirement());
+                });
+            });
+
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

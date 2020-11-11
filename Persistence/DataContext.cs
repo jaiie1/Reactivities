@@ -29,18 +29,19 @@ namespace Persistence
 
             );
 
-            builder.Entity<UserActivity>(x => x.HasKey(ua 
-            => new {ua.AppUserId, ua.ActivityId}));
+           builder.Entity<UserActivity>(x => x.HasKey(ua =>
+                new { ua.AppUserId, ua.ActivityId }));
 
             builder.Entity<UserActivity>()
-            .HasOne(u => u.AppUser)
-            .WithMany(a => a.userActivities)
-            .HasForeignKey(u => u.AppUserId);
+                .HasOne(u => u.AppUser)
+                .WithMany(a => a.UserActivities)
+                .HasForeignKey(u => u.AppUserId);
 
             builder.Entity<UserActivity>()
-            .HasOne(a => a.Activity)
-            .WithMany(u => u.UserActivities)
-            .HasForeignKey(a => a.ActivityId);
+                .HasOne(a => a.Activity)
+                .WithMany(u => u.UserActivities)
+                .HasForeignKey(a => a.ActivityId);
+
         }
     }
 }
