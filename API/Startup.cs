@@ -42,7 +42,7 @@ namespace API
              {
                  opt.AddPolicy("CorsPolicy", policy =>
                  {
-                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
                  });
              });
 
@@ -59,6 +59,7 @@ namespace API
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            identityBuilder.AddDefaultTokenProviders();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,11 +86,11 @@ namespace API
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseDefaultFiles();
             app.UseRouting();
             app.UseCors("CorsPolicy");
 
-            app.UseAuthentication();    
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

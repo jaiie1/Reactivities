@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using System.Security.Claims;
-using Application.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
-using Domain;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Application.Interfaces;
+using Domain;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Security
 {
@@ -26,10 +26,10 @@ namespace Infrastructure.Security
             };
 
             // generate signing credentials
-            
-            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha384Signature);
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
-            var tokenDescriptor = new SecurityTokenDescriptor{
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds
@@ -40,7 +40,6 @@ namespace Infrastructure.Security
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
-
         }
     }
-}   
+}

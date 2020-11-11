@@ -13,36 +13,29 @@ namespace Application.User
         public class Query : IRequest<User> { }
 
         public class Handler : IRequestHandler<Query, User>
-        {           
-            private readonly UserManager<AppUser> _userManager;  
-
+        {
+            private readonly UserManager<AppUser> _userManager;
             private readonly IJwtGenerator _jwtGenerator;
-
-             private readonly IUserAccessor _userAccessor;
-            public Handler(UserManager<AppUser> userManager, IUserAccessor userAccessor, IJwtGenerator jwtGenerator)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
             {
-                
-                _userManager = userManager;
-                UserAccessor = userAccessor;
                 _userAccessor = userAccessor;
+                _jwtGenerator = jwtGenerator;
+                _userManager = userManager;
             }
 
-            public IUserAccessor UserAccessor { get; }
-
-            public async Task<User> Handle(Query request,
-            CancellationToken cancellationToken)
+            public async Task<User> Handle(Query request, CancellationToken cancellationToken)
             {
+                var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
 
-               var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
-
-               return new User{
-                   DisplayName = user.DisplayName,
-                   UserName = user.UserName,
-                   Token = _jwtGenerator.CreateToken(user),
-                   Image = null
-               };
+                return new User
+                {
+                    DisplayName = user.DisplayName,
+                    UserName = user.UserName,
+                    Token = _jwtGenerator.CreateToken(user),
+                    Image = null
+                };
             }
-
         }
     }
 }
