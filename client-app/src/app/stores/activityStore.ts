@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction, makeObservable } from 'mobx';
+import { observable, action, computed, runInAction, makeObservable, makeAutoObservable } from 'mobx';
 import { SyntheticEvent } from 'react';
 import { IActivity } from '../models/activity';
 import agent from '../api/agent';
@@ -6,13 +6,12 @@ import { history } from '../..';
 import { toast } from 'react-toastify';
 import {RootStore} from './rootStore';
 import { createAttendee, setActivityProps } from '../common/util/util';
-import { create } from 'domain';
 
 export default class ActivityStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    makeObservable(this);
+    makeAutoObservable(this);
   }
 
   @observable activityRegistry = new Map();
@@ -43,7 +42,7 @@ export default class ActivityStore {
       const activities = await agent.Activities.list();
       runInAction(() => {
         activities.forEach(activity => {
-          setActivityProps(activity, this.rootStore.userStore.user!);
+          setActivityProps(activity, this.rootStore.userStore.user!);          
           this.activityRegistry.set(activity.id, activity);
         });
         this.loadingInitial = false;
@@ -51,6 +50,7 @@ export default class ActivityStore {
     } catch (error) {
       runInAction(() => {
         this.loadingInitial = false;
+        console.log(error)
       })
     }
   };
@@ -58,8 +58,7 @@ export default class ActivityStore {
   @action loadActivity = async (id: string) => {
     let activity = this.getActivity(id);
     if (activity) {
-      this.activity = activity;
-      return activity;
+      this.activity = activity;      
     } else {
       this.loadingInitial = true;
       try {
@@ -67,18 +66,20 @@ export default class ActivityStore {
         runInAction(() => {
           setActivityProps(activity, this.rootStore.userStore.user!);
           this.activity = activity;
-          this.activityRegistry.set(activity.id, activity);
+          this.activityRegistry.set(activity.id, activity);          
           this.loadingInitial = false;
-        })
+        });
         return activity;
       } catch (error) {
         runInAction(() => {
           this.loadingInitial = false;
-        })
+        });
         console.log(error);
       }
     }
-  }
+  };
+
+  
 
   @action clearActivity = () => {
     this.activity = null;
@@ -181,7 +182,7 @@ export default class ActivityStore {
         this.activity.attendees = this.activity.attendees.filter(a => a.username !==
           this.rootStore.userStore.user!.username);
           this.activity.isGoing = false;
-          this.activityRegistry.set(this.activity.id, this. activity);
+          this.activityRegistry.set(this.activity.id, this.activity);
           this.loading = false;
       }
      })     

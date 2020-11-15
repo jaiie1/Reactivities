@@ -6,7 +6,7 @@ import LoginForm from '../user/LoginForm';
 import RegisterForm from '../user/RegisterForm';
 
 const HomePage = () => {
-  const token = window.localStorage.getItem("jwt");
+  const token = window.localStorage.getItem('jwt');
   const rootStore = useContext(RootStoreContext);
   const { user, isLoggedIn } = rootStore.userStore;
   const {openModal} = rootStore.modalStore;
@@ -32,7 +32,7 @@ const HomePage = () => {
         ) : (
           <Fragment>
           <Header as='h2' inverted content={`Welcome to Reactivitities`} />
-          <Button onClick={() => openModal(<LoginForm />)} size='huge' inverted>
+           <Button onClick={() => openModal(<LoginForm />)} size='huge' inverted>
             Login
           </Button>
           <Button onClick={() => openModal(<RegisterForm />)} size='huge' inverted>

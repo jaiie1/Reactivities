@@ -1,4 +1,4 @@
-import { observable, computed, action, runInAction } from 'mobx';
+import { observable, computed, action, runInAction, makeAutoObservable } from 'mobx';
 import { IUser, IUserFormValues } from '../models/user';
 import agent from '../api/agent';
 import { RootStore } from './rootStore';
@@ -8,6 +8,7 @@ export default class UserStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+    makeAutoObservable(this);
   }
 
   @observable user: IUser | null = null;
@@ -23,9 +24,9 @@ export default class UserStore {
         this.user = user;        
       });
       this.rootStore.commonStore.setToken(user.token);
-      this.rootStore.modalStore.closeModal();
-      console.log(user)      
+      this.rootStore.modalStore.closeModal();            
       history.push('/activities');
+      console.log(user)
     } catch (error) {
       throw error;
     }
@@ -40,6 +41,7 @@ export default class UserStore {
         this.rootStore.commonStore.setToken(user.token);
         this.rootStore.modalStore.closeModal();
         history.push("/activities");
+        
       })
     } catch (error) {
       throw error;

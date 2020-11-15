@@ -11,13 +11,13 @@ configure({enforceActions: 'always'});
 export class RootStore {
     activityStore: ActivityStore;
     userStore: UserStore;
-    commenStore: CommonStore;
+    commonStore: CommonStore;
     modalstore: ModalStore;
 
     constructor(){
         this.activityStore = new ActivityStore(this);
         this.userStore = new UserStore(this);
-        this.commenStore = new CommonStore(this);
+        this.commonStore = new CommonStore(this);
         this.modalstore = new ModalStore(this);
     }
 }

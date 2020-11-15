@@ -14,7 +14,7 @@ const ActivityListItemAttendees: React.FC<IProps> = ({ attendees }) => {
             <Popup header={attendee.displayName}
               trigger={<Image size="mini"
                circular 
-               src={attendee.image && '/assets/user.png'}
+               src={attendee.image || '/assets/user.png'}
                 />
             } 
             />          

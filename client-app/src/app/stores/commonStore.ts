@@ -1,10 +1,11 @@
 import {RootStore} from './rootStore';
-import { observable, action, reaction } from 'mobx';
+import { observable, action, reaction, makeAutoObservable } from 'mobx';
 
 export default class CommonStore {
     rootStore: RootStore;
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
+        makeAutoObservable(this);
 
         reaction(
             () => this.token,
@@ -22,10 +23,10 @@ export default class CommonStore {
     @observable appLoaded = false;
 
     @action setToken = (token: string | null) => {
-        this.token = token;        
+        this.token = token;
     }
 
     @action setAppLoaded = () => {
-        this.appLoaded = true;        
+        this.appLoaded = true;
     }
 }

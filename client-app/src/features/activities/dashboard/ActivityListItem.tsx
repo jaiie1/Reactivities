@@ -15,8 +15,8 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
           <Item>
             <Item.Image size="tiny" circular src={host.image || "/assets/user.png"} />
             <Item.Content>
-              <Item.Header as={Link} to={`/activities/${activity.id}`}>{activity.title}</Item.Header>
-                <Item.Description>Hosted by{host.displayName}</Item.Description>
+              <Item.Header as={Link} to={`/activities${activity.id}`}>{activity.title}</Item.Header>
+                <Item.Description>Hosted by {host.displayName}</Item.Description>
               {activity.isHost &&
               <Item.Description>
                 <Label
@@ -30,7 +30,7 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
                 <Label
                   basic
                   color="green"
-                  content="You going yo this activity"
+                  content="You going yo this activity"  
                 />
               </Item.Description>}
             </Item.Content>
