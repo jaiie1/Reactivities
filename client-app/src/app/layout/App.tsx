@@ -53,7 +53,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   path={["/createActivity", "/manage/:id"]}
                   component={ActivityForm}
                 />
-                <Route path='/login' component={LoginForm} />
+                {/* <Route path='/login' component={LoginForm} /> */}
                 <Route component={NotFound} />
               </Switch>
             </Container>
